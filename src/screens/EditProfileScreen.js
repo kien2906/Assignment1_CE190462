@@ -21,7 +21,15 @@ export default function EditProfileScreen({ profile, navigation, onSave }) {
       return;
     }
 
-    onSave({ ...draft, name, bio: draft.bio.trim(), avatar: draft.avatar.trim() });
+    onSave({
+      ...draft,
+      name,
+      bio: draft.bio.trim(),
+      email: draft.email.trim(),
+      location: draft.location.trim(),
+      occupation: draft.occupation.trim(),
+      avatar: draft.avatar.trim(),
+    });
   };
 
   return (
@@ -70,6 +78,43 @@ export default function EditProfileScreen({ profile, navigation, onSave }) {
         multiline
         maxLength={160}
       />
+
+      <Text style={styles.label}>Email</Text>
+      <TextInput
+        value={draft.email}
+        onChangeText={(email) => setDraft({ ...draft, email })}
+        style={styles.input}
+        placeholder="Nhập email của bạn"
+        placeholderTextColor="#94A3B8"
+        autoCapitalize="none"
+        keyboardType="email-address"
+      />
+
+      <Text style={styles.label}>Địa điểm</Text>
+      <TextInput
+        value={draft.location}
+        onChangeText={(location) => setDraft({ ...draft, location })}
+        style={styles.input}
+        placeholder="Nhập địa điểm của bạn"
+        placeholderTextColor="#94A3B8"
+      />
+
+      <Text style={styles.label}>Nghề nghiệp</Text>
+      <TextInput
+        value={draft.occupation}
+        onChangeText={(occupation) => setDraft({ ...draft, occupation })}
+        style={styles.input}
+        placeholder="Nhập nghề nghiệp của bạn"
+        placeholderTextColor="#94A3B8"
+      />
+
+      <Text style={styles.label}>Mã sinh viên</Text>
+      <View style={styles.readOnlyInput}>
+        <Text style={styles.readOnlyText}>
+          {draft.studentId || "Chưa cập nhật"}
+        </Text>
+        <Text style={styles.readOnlyHint}>Không thể chỉnh sửa</Text>
+      </View>
 
       <View style={styles.buttonRow}>
         <TouchableOpacity
@@ -145,6 +190,26 @@ const styles = StyleSheet.create({
     minHeight: 112,
     paddingTop: 14,
     textAlignVertical: "top",
+  },
+  readOnlyInput: {
+    minHeight: 50,
+    marginBottom: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    borderRadius: 12,
+    backgroundColor: "#F8FAFC",
+  },
+  readOnlyText: {
+    color: "#475569",
+    fontSize: 16,
+  },
+  readOnlyHint: {
+    color: "#94A3B8",
+    fontSize: 12,
   },
   buttonRow: {
     flexDirection: "row",

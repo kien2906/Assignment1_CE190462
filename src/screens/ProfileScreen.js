@@ -9,6 +9,12 @@ import {
 
 export default function ProfileScreen({ profile, navigation }) {
   const initial = profile.name.trim().charAt(0).toUpperCase();
+  const details = [
+    { label: "Email", value: profile.email },
+    { label: "Địa điểm", value: profile.location },
+    { label: "Nghề nghiệp", value: profile.occupation },
+    { label: "Mã sinh viên", value: profile.studentId },
+  ];
 
   return (
     <ScrollView contentContainerStyle={styles.content}>
@@ -31,8 +37,18 @@ export default function ProfileScreen({ profile, navigation }) {
           accessibilityRole="button"
           accessibilityLabel="Chỉnh sửa hồ sơ"
         >
-          <Text style={styles.editButtonText}>Edit</Text>
+          <Text style={styles.editButtonText}>Chỉnh sửa hồ sơ</Text>
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.detailsCard}>
+        <Text style={styles.detailsTitle}>Thông tin cá nhân</Text>
+        {details.map(({ label, value }) => (
+          <View key={label} style={styles.detailRow}>
+            <Text style={styles.detailLabel}>{label}</Text>
+            <Text style={styles.detailValue}>{value || "Chưa cập nhật"}</Text>
+          </View>
+        ))}
       </View>
     </ScrollView>
   );
@@ -109,5 +125,42 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "700",
+  },
+  detailsCard: {
+    marginTop: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 2,
+  },
+  detailsTitle: {
+    paddingVertical: 14,
+    color: "#0F172A",
+    fontSize: 17,
+    fontWeight: "700",
+  },
+  detailRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 16,
+    paddingVertical: 14,
+    borderTopWidth: 1,
+    borderTopColor: "#F1F5F9",
+  },
+  detailLabel: {
+    color: "#64748B",
+    fontSize: 14,
+  },
+  detailValue: {
+    flexShrink: 1,
+    color: "#0F172A",
+    fontSize: 14,
+    fontWeight: "600",
+    textAlign: "right",
   },
 });
