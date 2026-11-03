@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 
-const initialInterests = [
+export const initialInterests = [
   {
     id: "coding",
     name: "Lập trình",
@@ -69,13 +69,18 @@ function normalizeText(value) {
     .toLowerCase();
 }
 
-export default function InterestsScreen() {
-  const [interests, setInterests] = useState(initialInterests);
+export default function InterestsScreen({
+  interests: sharedInterests,
+  setInterests: updateInterests,
+}) {
+  const [localInterests, setLocalInterests] = useState(initialInterests);
   const [searchText, setSearchText] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [showForm, setShowForm] = useState(false);
   const [newName, setNewName] = useState("");
   const [newCategory, setNewCategory] = useState("");
+  const interests = sharedInterests ?? localInterests;
+  const setInterests = updateInterests || setLocalInterests;
 
   const categories = useMemo(
     () => [...new Set(interests.map((interest) => interest.category))],

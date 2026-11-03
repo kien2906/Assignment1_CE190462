@@ -12,24 +12,37 @@ import {
 
 export default function EditProfileScreen({ profile, navigation, onSave }) {
   const [draft, setDraft] = useState({ ...profile });
+  const [saving, setSaving] = useState(false);
   const initial = draft.name.trim().charAt(0).toUpperCase() || "?";
 
-  const saveProfile = () => {
+  const saveProfile = async () => {
     const name = draft.name.trim();
     if (!name) {
       Alert.alert("Thiếu tên", "Vui lòng nhập tên của bạn.");
       return;
     }
 
-    onSave({
-      ...draft,
-      name,
-      bio: draft.bio.trim(),
-      email: draft.email.trim(),
-      location: draft.location.trim(),
-      occupation: draft.occupation.trim(),
-      avatar: draft.avatar.trim(),
-    });
+    setSaving(true);
+    try {
+      await onSave({
+        ...draft,
+        name,
+        bio: draft.bio.trim(),
+        email: draft.email.trim(),
+        location: draft.location.trim(),
+        occupation: draft.occupation.trim(),
+        avatar: draft.avatar.trim(),
+      });
+      navigation.goBack();
+    } catch (error) {
+      console.error("Failed to save the profile.", error);
+      Alert.alert(
+        "Không thể lưu hồ sơ",
+        "Đã xảy ra lỗi khi lưu. Vui lòng thử lại.",
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -125,11 +138,14 @@ export default function EditProfileScreen({ profile, navigation, onSave }) {
           <Text style={styles.cancelButtonText}>Hủy</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, styles.saveButton]}
+          style={[styles.button, styles.saveButton, saving && styles.disabledButton]}
           onPress={saveProfile}
+          disabled={saving}
           accessibilityRole="button"
         >
-          <Text style={styles.saveButtonText}>Lưu thay đổi</Text>
+          <Text style={styles.saveButtonText}>
+            {saving ? "Đang lưu..." : "Lưu thay đổi"}
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -231,6 +247,9 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: "#2563EB",
+  },
+  disabledButton: {
+    opacity: 0.6,
   },
   cancelButtonText: {
     color: "#334155",
