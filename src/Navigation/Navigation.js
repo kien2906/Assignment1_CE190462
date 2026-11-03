@@ -80,7 +80,12 @@ function TabBottom({ profile, setProfile }) {
       />
       <Tab.Screen
         name="Profile"
-        options={{ tabBarLabel: "Profile" }}
+        options={{
+          tabBarLabel: "Profile",
+          tabBarIcon: ({ color }) => (
+            <BottomTabIcon name="profile" color={color} />
+          ),
+        }}
       >
         {() => (
           <ProfileNavigator profile={profile} setProfile={setProfile} />
