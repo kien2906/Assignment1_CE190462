@@ -21,6 +21,7 @@ import {
   loadProfile,
   saveProfile as persistProfile,
 } from "../storage/profileStorage";
+import { useSettings } from "../Context/SettingsContext";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -84,8 +85,16 @@ function HomeStackNavigator({ profile, interests }) {
 }
 
 function TabBottom({ profile, setProfile, interests, setInterests }) {
+  const { theme } = useSettings();
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: { backgroundColor: theme ? "#1F2937" : "#FFFFFF" },
+        tabBarActiveTintColor: theme ? "#FFFFFF" : "#2563EB",
+        tabBarInactiveTintColor: theme ? "#9CA3AF" : "#64748B",
+      }}
+    >
       <Tab.Screen
         name="Home"
         options={{ tabBarLabel: "Home" }}
@@ -113,6 +122,7 @@ function TabBottom({ profile, setProfile, interests, setInterests }) {
 }
 
 export default function Navigation() {
+  const { theme } = useSettings();
   const [profile, setProfile] = useState(initialProfile);
   const [interests, setInterests] = useState(initialInterests);
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -155,7 +165,15 @@ export default function Navigation() {
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator>
+      <Drawer.Navigator
+        screenOptions={{
+          drawerStyle: { backgroundColor: theme ? "#1F2937" : "#FFFFFF" },
+          headerStyle: { backgroundColor: theme ? "#1F2937" : "#FFFFFF" },
+          headerTintColor: theme ? "#F9FAFB" : "#111827",
+          drawerActiveTintColor: theme ? "#FFFFFF" : "#2563EB",
+          drawerInactiveTintColor: theme ? "#D1D5DB" : "#374151",
+        }}
+      >
         <Drawer.Screen
           name="Home"
           options={{ headerShown: true, headerTitle: "" }}

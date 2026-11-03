@@ -8,6 +8,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import {
+  getScaledFontSize,
+  useSettings,
+} from "../Context/SettingsContext";
 
 export const initialInterests = [
   {
@@ -73,6 +77,16 @@ export default function InterestsScreen({
   interests: sharedInterests,
   setInterests: updateInterests,
 }) {
+  const { theme, fontSize } = useSettings();
+  const colors = {
+    background: theme ? "#111827" : "#F8FAFC",
+    card: theme ? "#1F2937" : "#FFFFFF",
+    text: theme ? "#F9FAFB" : "#0F172A",
+    muted: theme ? "#D1D5DB" : "#64748B",
+    divider: theme ? "#374151" : "#E2E8F0",
+    input: theme ? "#374151" : "#FFFFFF",
+  };
+  const scaledFontSize = (size) => getScaledFontSize(fontSize, size);
   const [localInterests, setLocalInterests] = useState(initialInterests);
   const [searchText, setSearchText] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
@@ -152,14 +166,26 @@ export default function InterestsScreen({
 
   return (
     <ScrollView
-      style={styles.screen}
+      style={[styles.screen, { backgroundColor: colors.background }]}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
       <View style={styles.titleRow}>
         <View style={styles.titleContent}>
-          <Text style={styles.pageTitle}>Sở thích của tôi</Text>
-          <Text style={styles.subtitle}>
+          <Text
+            style={[
+              styles.pageTitle,
+              { color: colors.text, fontSize: scaledFontSize(24) },
+            ]}
+          >
+            Sở thích của tôi
+          </Text>
+          <Text
+            style={[
+              styles.subtitle,
+              { color: colors.muted, fontSize: scaledFontSize(14) },
+            ]}
+          >
             {interests.length} sở thích · {favoriteCount} yêu thích
           </Text>
         </View>
@@ -173,14 +199,22 @@ export default function InterestsScreen({
         </TouchableOpacity>
       </View>
 
-      <View style={styles.searchBar}>
-        <Text style={styles.searchIcon}>⌕</Text>
+      <View
+        style={[
+          styles.searchBar,
+          { backgroundColor: colors.card, borderColor: colors.divider },
+        ]}
+      >
+        <Text style={[styles.searchIcon, { color: colors.muted }]}>⌕</Text>
         <TextInput
           value={searchText}
           onChangeText={setSearchText}
-          style={styles.searchInput}
+          style={[
+            styles.searchInput,
+            { color: colors.text, fontSize: scaledFontSize(15) },
+          ]}
+          placeholderTextColor={colors.muted}
           placeholder="Tìm sở thích..."
-          placeholderTextColor="#94A3B8"
           returnKeyType="search"
           accessibilityLabel="Tìm kiếm sở thích"
         />
@@ -207,13 +241,21 @@ export default function InterestsScreen({
           return (
             <TouchableOpacity
               key={filter.id}
-              style={[styles.filterButton, selected && styles.activeFilterButton]}
+              style={[
+                styles.filterButton,
+                { backgroundColor: colors.card, borderColor: colors.divider },
+                selected && styles.activeFilterButton,
+              ]}
               onPress={() => setActiveFilter(filter.id)}
               accessibilityRole="button"
               accessibilityState={{ selected }}
             >
               <Text
-                style={[styles.filterText, selected && styles.activeFilterText]}
+                style={[
+                  styles.filterText,
+                  { color: colors.muted, fontSize: scaledFontSize(13) },
+                  selected && styles.activeFilterText,
+                ]}
               >
                 {filter.label}
               </Text>
@@ -223,23 +265,25 @@ export default function InterestsScreen({
       </ScrollView>
 
       {showForm && (
-        <View style={styles.form}>
-          <Text style={styles.formTitle}>Thêm sở thích mới</Text>
+        <View style={[styles.form, { backgroundColor: colors.card, borderColor: colors.divider }]}>
+          <Text style={[styles.formTitle, { color: colors.text, fontSize: scaledFontSize(17) }]}>
+            Thêm sở thích mới
+          </Text>
           <TextInput
             value={newName}
             onChangeText={setNewName}
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.input, borderColor: colors.divider, color: colors.text, fontSize: scaledFontSize(15) }]}
             placeholder="Tên sở thích"
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={colors.muted}
             maxLength={60}
             returnKeyType="next"
           />
           <TextInput
             value={newCategory}
             onChangeText={setNewCategory}
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.input, borderColor: colors.divider, color: colors.text, fontSize: scaledFontSize(15) }]}
             placeholder="Danh mục (ví dụ: Thể thao)"
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={colors.muted}
             maxLength={40}
             onSubmitEditing={addInterest}
             returnKeyType="done"
@@ -249,34 +293,34 @@ export default function InterestsScreen({
             onPress={addInterest}
             accessibilityRole="button"
           >
-            <Text style={styles.saveButtonText}>Thêm sở thích</Text>
+            <Text style={[styles.saveButtonText, { fontSize: scaledFontSize(15) }]}>Thêm sở thích</Text>
           </TouchableOpacity>
         </View>
       )}
 
       <View style={styles.resultsHeader}>
-        <Text style={styles.resultsTitle}>Danh sách sở thích</Text>
-        <Text style={styles.resultsCount}>{visibleInterests.length} mục</Text>
+        <Text style={[styles.resultsTitle, { color: colors.text, fontSize: scaledFontSize(18) }]}>Danh sách sở thích</Text>
+        <Text style={[styles.resultsCount, { color: colors.muted, fontSize: scaledFontSize(13) }]}>{visibleInterests.length} mục</Text>
       </View>
 
       {visibleInterests.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyTitle}>Không tìm thấy sở thích</Text>
-          <Text style={styles.emptyText}>
+        <View style={[styles.emptyState, { backgroundColor: colors.card }]}>
+          <Text style={[styles.emptyTitle, { color: colors.text, fontSize: scaledFontSize(16) }]}>Không tìm thấy sở thích</Text>
+          <Text style={[styles.emptyText, { color: colors.muted, fontSize: scaledFontSize(14) }]}>
             Thử từ khóa khác hoặc chọn một bộ lọc khác.
           </Text>
         </View>
       ) : (
         visibleInterests.map((interest) => (
-          <View key={interest.id} style={styles.interestCard}>
+          <View key={interest.id} style={[styles.interestCard, { backgroundColor: colors.card, borderColor: colors.divider }]}>
             <View style={styles.cardTopRow}>
               <View style={styles.interestIconBox}>
                 <Text style={styles.interestIcon}>{interest.icon}</Text>
               </View>
               <View style={styles.cardContent}>
-                <Text style={styles.interestName}>{interest.name}</Text>
-                <Text style={styles.categoryBadge}>{interest.category}</Text>
-                <Text style={styles.description}>{interest.description}</Text>
+                <Text style={[styles.interestName, { color: colors.text, fontSize: scaledFontSize(16) }]}>{interest.name}</Text>
+                <Text style={[styles.categoryBadge, { fontSize: scaledFontSize(11) }]}>{interest.category}</Text>
+                <Text style={[styles.description, { color: colors.muted, fontSize: scaledFontSize(13) }]}>{interest.description}</Text>
               </View>
               <TouchableOpacity
                 style={styles.favoriteButton}
@@ -303,12 +347,13 @@ export default function InterestsScreen({
               <Text
                 style={[
                   styles.favoriteStatus,
+                  { fontSize: scaledFontSize(12) },
                   interest.favorite && styles.favoriteStatusActive,
                 ]}
               >
                 {interest.favorite ? "♥ Đã yêu thích" : "♡ Chưa yêu thích"}
               </Text>
-              <Text style={styles.categoryFooter}>{interest.category}</Text>
+              <Text style={[styles.categoryFooter, { color: colors.muted, fontSize: scaledFontSize(12) }]}>{interest.category}</Text>
             </View>
           </View>
         ))
