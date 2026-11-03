@@ -7,6 +7,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import {
+  getScaledFontSize,
+  useSettings,
+} from "../Context/SettingsContext";
 
 const quickActions = [
   {
@@ -30,6 +34,14 @@ const quickActions = [
 ];
 
 export default function HomeScreen({ profile, interests = [], navigation }) {
+  const { theme, fontSize } = useSettings();
+  const colors = {
+    background: theme ? "#111827" : "#F8FAFC",
+    card: theme ? "#1F2937" : "#FFFFFF",
+    text: theme ? "#F9FAFB" : "#0F172A",
+    muted: theme ? "#D1D5DB" : "#64748B",
+  };
+  const scaledFontSize = (size) => getScaledFontSize(fontSize, size);
   const navigateTo = (screen) => {
     if (screen === "Setting") {
       navigation.getParent()?.getParent()?.navigate(screen);
@@ -42,12 +54,26 @@ export default function HomeScreen({ profile, interests = [], navigation }) {
   const initial = profile?.name?.trim()?.charAt(0)?.toUpperCase() || "?";
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView style={[styles.screen, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>CHÀO MỪNG TRỞ LẠI</Text>
-            <Text style={styles.headerName}>{profile?.name || "Bạn"}</Text>
+            <Text
+              style={[
+                styles.greeting,
+                { color: colors.muted, fontSize: scaledFontSize(12) },
+              ]}
+            >
+              CHÀO MỪNG TRỞ LẠI
+            </Text>
+            <Text
+              style={[
+                styles.headerName,
+                { color: colors.text, fontSize: scaledFontSize(26) },
+              ]}
+            >
+              {profile?.name || "Bạn"}
+            </Text>
           </View>
           <View style={styles.headerAvatar}>
             {profile?.avatar ? (
@@ -61,7 +87,7 @@ export default function HomeScreen({ profile, interests = [], navigation }) {
           </View>
         </View>
 
-        <View style={styles.profileCard}>
+        <View style={[styles.profileCard, { backgroundColor: colors.card }]}>
           <View style={styles.profileSummary}>
             <View style={styles.profileAvatar}>
               {profile?.avatar ? (
@@ -74,8 +100,20 @@ export default function HomeScreen({ profile, interests = [], navigation }) {
               )}
             </View>
             <View style={styles.profileText}>
-              <Text style={styles.profileName}>{profile?.name || "Bạn"}</Text>
-              <Text style={styles.profileBio}>
+              <Text
+                style={[
+                  styles.profileName,
+                  { color: colors.text, fontSize: scaledFontSize(19) },
+                ]}
+              >
+                {profile?.name || "Bạn"}
+              </Text>
+              <Text
+                style={[
+                  styles.profileBio,
+                  { color: colors.muted, fontSize: scaledFontSize(14) },
+                ]}
+              >
                 {profile?.bio || "Thêm vài dòng giới thiệu về bạn."}
               </Text>
             </View>
@@ -90,40 +128,71 @@ export default function HomeScreen({ profile, interests = [], navigation }) {
         </View>
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Sở thích của tôi</Text>
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: colors.text, fontSize: scaledFontSize(17) },
+            ]}
+          >
+            Sở thích của tôi
+          </Text>
           <TouchableOpacity
             onPress={() => navigateTo("Interests")}
             accessibilityRole="button"
           >
-            <Text style={styles.viewAllText}>Xem tất cả</Text>
+            <Text style={[styles.viewAllText, { fontSize: scaledFontSize(14) }]}>
+              Xem tất cả
+            </Text>
           </TouchableOpacity>
         </View>
 
         {previewInterests.length > 0 ? (
           <View style={styles.interestsContainer}>
             {previewInterests.map((interest) => (
-              <View key={interest.id} style={styles.interestBadge}>
-                <Text style={styles.interestText}>{interest.name}</Text>
+              <View
+                key={interest.id}
+                style={[styles.interestBadge, { backgroundColor: colors.card }]}
+              >
+                <Text
+                  style={[
+                    styles.interestText,
+                    { color: colors.text, fontSize: scaledFontSize(14) },
+                  ]}
+                >
+                  {interest.name}
+                </Text>
               </View>
             ))}
           </View>
         ) : (
           <TouchableOpacity
-            style={styles.emptyInterests}
+            style={[styles.emptyInterests, { backgroundColor: colors.card }]}
             onPress={() => navigateTo("Interests")}
             accessibilityRole="button"
           >
-            <Text style={styles.emptyInterestsText}>
+            <Text
+              style={[
+                styles.emptyInterestsText,
+                { fontSize: scaledFontSize(14) },
+              ]}
+            >
               Thêm sở thích đầu tiên của bạn
             </Text>
           </TouchableOpacity>
         )}
 
-        <Text style={styles.quickActionsTitle}>Truy cập nhanh</Text>
+        <Text
+          style={[
+            styles.quickActionsTitle,
+            { color: colors.text, fontSize: scaledFontSize(17) },
+          ]}
+        >
+          Truy cập nhanh
+        </Text>
         {quickActions.map((action) => (
           <TouchableOpacity
             key={action.screen}
-            style={styles.actionCard}
+            style={[styles.actionCard, { backgroundColor: colors.card }]}
             onPress={() => navigateTo(action.screen)}
             accessibilityRole="button"
           >
@@ -131,8 +200,22 @@ export default function HomeScreen({ profile, interests = [], navigation }) {
               <Text style={styles.actionIconText}>{action.icon}</Text>
             </View>
             <View style={styles.actionText}>
-              <Text style={styles.actionTitle}>{action.title}</Text>
-              <Text style={styles.actionDescription}>{action.description}</Text>
+              <Text
+                style={[
+                  styles.actionTitle,
+                  { color: colors.text, fontSize: scaledFontSize(15) },
+                ]}
+              >
+                {action.title}
+              </Text>
+              <Text
+                style={[
+                  styles.actionDescription,
+                  { color: colors.muted, fontSize: scaledFontSize(12) },
+                ]}
+              >
+                {action.description}
+              </Text>
             </View>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
@@ -145,7 +228,6 @@ export default function HomeScreen({ profile, interests = [], navigation }) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
   },
   content: {
     padding: 22,

@@ -9,8 +9,21 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import {
+  getScaledFontSize,
+  useSettings,
+} from "../Context/SettingsContext";
 
 export default function EditProfileScreen({ profile, navigation, onSave }) {
+  const { theme, fontSize } = useSettings();
+  const colors = {
+    background: theme ? "#111827" : "#F8FAFC",
+    input: theme ? "#1F2937" : "#FFFFFF",
+    muted: theme ? "#D1D5DB" : "#64748B",
+    text: theme ? "#F9FAFB" : "#0F172A",
+    border: theme ? "#4B5563" : "#CBD5E1",
+  };
+  const scaledFontSize = (size) => getScaledFontSize(fontSize, size);
   const [draft, setDraft] = useState({ ...profile });
   const [saving, setSaving] = useState(false);
   const initial = draft.name.trim().charAt(0).toUpperCase() || "?";
@@ -47,95 +60,102 @@ export default function EditProfileScreen({ profile, navigation, onSave }) {
 
   return (
     <ScrollView
+      style={{ backgroundColor: colors.background }}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={styles.pageTitle}>Chỉnh sửa hồ sơ</Text>
+      <Text style={[styles.pageTitle, { color: colors.text, fontSize: scaledFontSize(24) }]}>
+        Chỉnh sửa hồ sơ
+      </Text>
 
       <View style={styles.avatarPreview}>
         {draft.avatar ? (
           <Image source={{ uri: draft.avatar }} style={styles.avatarImage} />
         ) : (
-          <Text style={styles.avatarInitials}>{initial}</Text>
+          <Text style={[styles.avatarInitials, { fontSize: scaledFontSize(40) }]}>{initial}</Text>
         )}
       </View>
 
-      <Text style={styles.label}>Đường dẫn ảnh đại diện</Text>
+      <Text style={[styles.label, { color: colors.text, fontSize: scaledFontSize(14) }]}>Đường dẫn ảnh đại diện</Text>
       <TextInput
         value={draft.avatar}
         onChangeText={(avatar) => setDraft({ ...draft, avatar })}
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.input, borderColor: colors.border, color: colors.text, fontSize: scaledFontSize(16) }]}
         placeholder="https://example.com/avatar.jpg"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.muted}
         autoCapitalize="none"
         keyboardType="url"
       />
 
-      <Text style={styles.label}>Tên</Text>
+      <Text style={[styles.label, { color: colors.text, fontSize: scaledFontSize(14) }]}>Tên</Text>
       <TextInput
         value={draft.name}
         onChangeText={(name) => setDraft({ ...draft, name })}
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.input, borderColor: colors.border, color: colors.text, fontSize: scaledFontSize(16) }]}
         placeholder="Nhập tên của bạn"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.muted}
         maxLength={60}
       />
 
-      <Text style={styles.label}>Bio</Text>
+      <Text style={[styles.label, { color: colors.text, fontSize: scaledFontSize(14) }]}>Bio</Text>
       <TextInput
         value={draft.bio}
         onChangeText={(bio) => setDraft({ ...draft, bio })}
-        style={[styles.input, styles.bioInput]}
+        style={[styles.input, styles.bioInput, { backgroundColor: colors.input, borderColor: colors.border, color: colors.text, fontSize: scaledFontSize(16) }]}
         placeholder="Giới thiệu ngắn về bạn"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.muted}
         multiline
         maxLength={160}
       />
 
-      <Text style={styles.label}>Email</Text>
+      <Text style={[styles.label, { color: colors.text, fontSize: scaledFontSize(14) }]}>Email</Text>
       <TextInput
         value={draft.email}
         onChangeText={(email) => setDraft({ ...draft, email })}
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.input, borderColor: colors.border, color: colors.text, fontSize: scaledFontSize(16) }]}
         placeholder="Nhập email của bạn"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.muted}
         autoCapitalize="none"
         keyboardType="email-address"
       />
 
-      <Text style={styles.label}>Địa điểm</Text>
+      <Text style={[styles.label, { color: colors.text, fontSize: scaledFontSize(14) }]}>Địa điểm</Text>
       <TextInput
         value={draft.location}
         onChangeText={(location) => setDraft({ ...draft, location })}
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.input, borderColor: colors.border, color: colors.text, fontSize: scaledFontSize(16) }]}
         placeholder="Nhập địa điểm của bạn"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.muted}
       />
 
-      <Text style={styles.label}>Nghề nghiệp</Text>
+      <Text style={[styles.label, { color: colors.text, fontSize: scaledFontSize(14) }]}>Nghề nghiệp</Text>
       <TextInput
         value={draft.occupation}
         onChangeText={(occupation) => setDraft({ ...draft, occupation })}
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.input, borderColor: colors.border, color: colors.text, fontSize: scaledFontSize(16) }]}
         placeholder="Nhập nghề nghiệp của bạn"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.muted}
       />
 
-      <Text style={styles.label}>Mã sinh viên</Text>
-      <View style={styles.readOnlyInput}>
-        <Text style={styles.readOnlyText}>
+      <Text style={[styles.label, { color: colors.text, fontSize: scaledFontSize(14) }]}>Mã sinh viên</Text>
+      <View style={[styles.readOnlyInput, { backgroundColor: theme ? "#374151" : "#F8FAFC", borderColor: colors.border }]}>
+        <Text style={[styles.readOnlyText, { color: colors.muted, fontSize: scaledFontSize(16) }]}>
           {draft.studentId || "Chưa cập nhật"}
         </Text>
-        <Text style={styles.readOnlyHint}>Không thể chỉnh sửa</Text>
+        <Text style={[styles.readOnlyHint, { color: colors.muted, fontSize: scaledFontSize(12) }]}>Không thể chỉnh sửa</Text>
       </View>
 
       <View style={styles.buttonRow}>
         <TouchableOpacity
-          style={[styles.button, styles.cancelButton]}
+          style={[
+            styles.button,
+            styles.cancelButton,
+            { backgroundColor: colors.input, borderColor: colors.border },
+          ]}
           onPress={() => navigation.goBack()}
           accessibilityRole="button"
         >
-          <Text style={styles.cancelButtonText}>Hủy</Text>
+          <Text style={[styles.cancelButtonText, { color: colors.text, fontSize: scaledFontSize(16) }]}>Hủy</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, styles.saveButton, saving && styles.disabledButton]}
@@ -143,7 +163,7 @@ export default function EditProfileScreen({ profile, navigation, onSave }) {
           disabled={saving}
           accessibilityRole="button"
         >
-          <Text style={styles.saveButtonText}>
+          <Text style={[styles.saveButtonText, { fontSize: scaledFontSize(16) }]}>
             {saving ? "Đang lưu..." : "Lưu thay đổi"}
           </Text>
         </TouchableOpacity>
