@@ -17,6 +17,10 @@ const Drawer = createDrawerNavigator();
 const initialProfile = {
   name: "Kien Trinh",
   bio: "Frontend Developer",
+  email: "KienTTCE190462@gmail.com",
+  location: "Cần THơ, Vietnam",
+  occupation: "Student",
+  studentId: "CE190462",
   avatar: "",
 };
 
