@@ -2,12 +2,25 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import EditProfileScreen from "../screens/EditProfileScreen";
 import HomeScreen from "../screens/HomeScreen";
-import InterestsScreen from "../screens/InterestsScreen";
+import InterestsScreen, {
+  initialInterests,
+} from "../screens/InterestsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import {
+  loadProfile,
+  saveProfile as persistProfile,
+} from "../storage/profileStorage";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -40,9 +53,9 @@ function ProfileNavigator({ profile, setProfile }) {
           <EditProfileScreen
             {...screenProps}
             profile={profile}
-            onSave={(updatedProfile) => {
+            onSave={async (updatedProfile) => {
+              await persistProfile(updatedProfile);
               setProfile(updatedProfile);
-              screenProps.navigation.goBack();
             }}
           />
         )}
@@ -51,33 +64,42 @@ function ProfileNavigator({ profile, setProfile }) {
   );
 }
 
-function HomeStackNavigator() {
+function HomeStackNavigator({ profile, interests }) {
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Home"
-        component={HomeScreen}
         options={{ headerShown: false }}
-      />
-      <Stack.Screen name="InterestsScreen" component={InterestsScreen} />
-      <Stack.Screen name="Setting" component={SettingsScreen} />
+      >
+        {(screenProps) => (
+          <HomeScreen
+            {...screenProps}
+            profile={profile}
+            interests={interests}
+          />
+        )}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }
 
-function TabBottom({ profile, setProfile }) {
+function TabBottom({ profile, setProfile, interests, setInterests }) {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen
         name="Home"
-        component={HomeStackNavigator}
         options={{ tabBarLabel: "Home" }}
-      />
-      <Tab.Screen
-        name="Interests"
-        component={InterestsScreen}
-        options={{ tabBarLabel: "Interests" }}
-      />
+      >
+        {() => <HomeStackNavigator profile={profile} interests={interests} />}
+      </Tab.Screen>
+      <Tab.Screen name="Interests" options={{ tabBarLabel: "Interests" }}>
+        {() => (
+          <InterestsScreen
+            interests={interests}
+            setInterests={setInterests}
+          />
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name="Profile"
         options={{ tabBarLabel: "Profile" }}
@@ -92,6 +114,44 @@ function TabBottom({ profile, setProfile }) {
 
 export default function Navigation() {
   const [profile, setProfile] = useState(initialProfile);
+  const [interests, setInterests] = useState(initialInterests);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    loadProfile(initialProfile)
+      .then((savedProfile) => {
+        if (isMounted) {
+          setProfile(savedProfile);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load the saved profile.", error);
+        Alert.alert(
+          "Không thể tải hồ sơ",
+          "Ứng dụng sẽ dùng thông tin hồ sơ mặc định.",
+        );
+      })
+      .finally(() => {
+        if (isMounted) {
+          setProfileLoaded(true);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (!profileLoaded) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color="#2563EB" />
+        <Text style={styles.loadingText}>Đang tải hồ sơ...</Text>
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
@@ -105,6 +165,8 @@ export default function Navigation() {
               {...screenProps}
               profile={profile}
               setProfile={setProfile}
+              interests={interests}
+              setInterests={setInterests}
             />
           )}
         </Drawer.Screen>
@@ -117,3 +179,17 @@ export default function Navigation() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F8FAFC",
+  },
+  loadingText: {
+    marginTop: 12,
+    color: "#64748B",
+    fontSize: 14,
+  },
+});
