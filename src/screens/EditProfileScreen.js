@@ -205,6 +205,23 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: "700",
   },
+  pickImageButton: {
+    minHeight: 48,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+  pickImageIcon: {
+    marginRight: 9,
+    color: "#2563EB",
+    fontWeight: "700",
+  },
+  pickImageText: {
+    fontWeight: "600",
+  },
   label: {
     marginBottom: 8,
     color: "#334155",
