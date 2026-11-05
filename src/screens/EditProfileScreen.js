@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as ImagePicker from "expo-image-picker";
 import {
   Alert,
   Image,
@@ -26,7 +27,35 @@ export default function EditProfileScreen({ profile, navigation, onSave }) {
   const scaledFontSize = (size) => getScaledFontSize(fontSize, size);
   const [draft, setDraft] = useState({ ...profile });
   const [saving, setSaving] = useState(false);
+  const [pickingImage, setPickingImage] = useState(false);
   const initial = draft.name.trim().charAt(0).toUpperCase() || "?";
+
+  const pickImage = async () => {
+    setPickingImage(true);
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setDraft((currentDraft) => ({
+          ...currentDraft,
+          avatar: result.assets[0].uri,
+        }));
+      }
+    } catch (error) {
+      console.error("Failed to pick a profile photo.", error);
+      Alert.alert(
+        "Không thể chọn ảnh",
+        "Đã xảy ra lỗi khi mở thư viện ảnh. Vui lòng thử lại.",
+      );
+    } finally {
+      setPickingImage(false);
+    }
+  };
 
   const saveProfile = async () => {
     const name = draft.name.trim();
@@ -75,6 +104,28 @@ export default function EditProfileScreen({ profile, navigation, onSave }) {
           <Text style={[styles.avatarInitials, { fontSize: scaledFontSize(40) }]}>{initial}</Text>
         )}
       </View>
+
+      <TouchableOpacity
+        style={[
+          styles.pickImageButton,
+          { backgroundColor: colors.input, borderColor: colors.border },
+          pickingImage && styles.disabledButton,
+        ]}
+        onPress={pickImage}
+        disabled={pickingImage}
+        accessibilityRole="button"
+        accessibilityLabel="Chọn ảnh đại diện từ thư viện ảnh"
+      >
+        <Text style={styles.pickImageIcon}>+</Text>
+        <Text
+          style={[
+            styles.pickImageText,
+            { color: colors.text, fontSize: scaledFontSize(15) },
+          ]}
+        >
+          {pickingImage ? "Đang mở thư viện ảnh..." : "Thêm ảnh từ thư viện"}
+        </Text>
+      </TouchableOpacity>
 
       <Text style={[styles.label, { color: colors.text, fontSize: scaledFontSize(14) }]}>Đường dẫn ảnh đại diện</Text>
       <TextInput
