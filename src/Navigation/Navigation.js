@@ -113,9 +113,7 @@ function TabBottom({ profile, setProfile, interests, setInterests }) {
         name="Profile"
         options={{
           tabBarLabel: "Profile",
-          tabBarIcon: ({ color }) => (
-            <BottomTabIcon name="profile" color={color} />
-          ),
+    
         }}
       >
         {() => (
